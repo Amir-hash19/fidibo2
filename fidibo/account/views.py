@@ -36,6 +36,20 @@ def register_user(request):
 
 
 
+@csrf_exempt
+def delete_user(request, user_id):
+    try:
+        user_id = UserAccount.objects.get(id=user_id)
+        user_id.delete()
+        return HttpResponse(f"The user with was deleted successfully")
+    except UserAccount.DoesNotExist:
+        HttpResponse(f"The user with {user_id.id} ID does not existed!")    
+    
+    
+    
+
+
+
 
 
 
