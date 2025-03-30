@@ -5,7 +5,7 @@ from account.models import UserAccount
 
 @admin.register(UserAccount)
 class UserAccountAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "email", " date_created")
+    list_display = ("full_name", "email", "date_created")
     list_filter = ("full_name", "email")
     search_fields = ("full_name", "email", "phone_number")
     list_per_page = 30
