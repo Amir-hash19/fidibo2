@@ -86,3 +86,13 @@ def display_book(request, book_id):
         return JsonResponse({"book_data":book_data})
     except UserAccount.DoesNotExist:
         return JsonResponse({"error":"User not found"} ,status=404)
+    
+
+
+
+
+@csrf_exempt
+def delete_book(request, book_id):
+    book = Book.objects.get(id=book_id)
+    book.delete()
+    return HttpResponse("The Book was deleted Successfully")
