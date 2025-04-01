@@ -1,10 +1,13 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import render
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
+from account.models import UserAccount
 from .serializers import BookSerializer
 from .models import Book
+import json
 
 
 
@@ -21,3 +24,40 @@ def book_list(request):
 
 
 
+
+
+@csrf_exempt
+def create_book(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            # دریافت اطلاعات نویسنده از داده‌های ورودی
+            author_id = data.get("author_id")  # فرض کنید کلید author_id در داده‌های ورودی موجود باشد
+            if not author_id:
+                return JsonResponse({"error": "Author ID is required"}, status=400)
+
+          
+            try:
+                author = UserAccount.objects.get(id=author_id)
+            except UserAccount.DoesNotExist:
+                return JsonResponse({"error": "Author not found"}, status=404)
+
+            # ایجاد کتاب جدید
+            created_book = Book.objects.create(
+                title=data.get("title"),
+                slug=data.get("slug"),
+                description=data.get("description"),
+                price=data.get("price"),
+                status=data.get("status"),
+                author=author  
+            )
+
+            return JsonResponse({"message": "The book was created successfully!", "book_id": created_book.id}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    
