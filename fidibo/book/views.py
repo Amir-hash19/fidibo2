@@ -60,4 +60,29 @@ def create_book(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-    
+
+
+
+@csrf_exempt
+def display_book(request, book_id):
+    try:
+        book = Book.objects.get(id=book_id)
+        author_data = {
+            "id":book.author.id,
+            "full_name":book.author.full_name,
+            "email":book.author.email
+        }
+
+
+        book_data = {
+            "id":book.id,
+            "title":book.title,
+            "slug":book.slug,
+            "description":book.description,
+            "price":book.price,
+            "author":author_data,
+            "status":book.status,
+        }
+        return JsonResponse({"book_data":book_data})
+    except UserAccount.DoesNotExist:
+        return JsonResponse({"error":"User not found"} ,status=404)
