@@ -3,6 +3,7 @@ from django.http.response import HttpResponse, JsonResponse
 from account.models import UserAccount
 from django.views.generic import TemplateView, DetailView
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.base import ContentFile
 import json
 import os
 
@@ -72,13 +73,15 @@ def edit_user(request, user_id):
         return JsonResponse({"error":"User not found"}, status=404)
 
     if request.method in ["PATCH", "PUT"]:
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode("utf-8")) if request.body else {}
         if request.method == "PUT":
             user.full_name = data.get("full_name", user.full_name)
             user.email = data.get("email", user.email)
             user.phone_number = data.get("phone_number", user.phone_number)
             user.age = data.get("age", user.age)
-            user.avatar = data.get("avatar",user.avatar.url)
+            if "avatar" in request.FILES:
+                user.avatar = request.FIELS["avatar"]
+
 
         elif request.method == "PATCH":
             if "full_name" in data:
@@ -89,8 +92,8 @@ def edit_user(request, user_id):
                 user.phone_number = data["phone_number"]
             if "age" in data:
                 user.age = data ["age"]
-            if "avatar" in data:
-                user.avatar = data[os.path.join("/home/amirykta/Desktop/projects/Fidibo/fidibo/media/avatars/avatar1_hQLW0Ov.jpeg")]         
+            if "avatar" in request.FILES:
+                user.avatar = request.FIELS["avatar"]     
         user.save()
         return HttpResponse("The User Updated Successfully!")
                     

@@ -18,7 +18,7 @@ class UserAccountAdmin(admin.ModelAdmin):
     
 
     def set_mobile_to_null(self, request, queryset):
-        phone_number_status = queryset.update(pphone_number=None)
+        phone_number_status = queryset.update(phone_number=None)
         self.message_user(request, "{} User(s) phonenumber set to none successfully.".format(phone_number_status))
 
     set_mobile_to_null.short_description = "Mark selected Users phonenumber to none"    
